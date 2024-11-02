@@ -2,8 +2,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-RUN echo $SERVICE_NAME
-RUN echo $PROJ_NAME
+ARG SERVICE_NAME=''
+ARG PROJ_NAME=''
+
 # Copy the shared library files if any
 COPY ./shared/ ./shared/
 

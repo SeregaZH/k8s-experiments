@@ -1,0 +1,45 @@
+name: CI For .NET Microservices
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/**'  # Only trigger for changes in the services directory
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'services/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - dotnet-resources-test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: |
+        cd services/${{ matrix.service }}
+        dotnet restore
+
+    - name: Build the application
+      run: |
+        cd services/${{ matrix.service }}
+        dotnet build --configuration Release --no-restore
+
+    - name: Run tests
+      run: |
+        cd services/${{ matrix.service }}
+        dotnet test --no-build --verbosity normal

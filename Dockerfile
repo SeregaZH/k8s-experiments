@@ -10,6 +10,8 @@ COPY ./services/${SERVICE_NAME}/ ./services/${SERVICE_NAME}/
 
 # Restore dependencies
 RUN dotnet restore ./services/${SERVICE_NAME}/src/${PROJ_NAME}.csproj
+RUN echo $SERVICE_NAME
+RUN echo $PROJ_NAME
 
 # Publish the application
 RUN dotnet publish ./services/${SERVICE_NAME}/src/${PROJ_NAME}.csproj -c Release -o /app/publish

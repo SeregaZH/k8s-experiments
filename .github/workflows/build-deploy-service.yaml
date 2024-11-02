@@ -52,7 +52,6 @@ jobs:
 
     - name: Build Docker image
       run: |
-        
         docker build --build-arg SERVICE_NAME=${{ matrix.service }} -t sztestacr.azurecr.io/${{ matrix.service }}:latest .
 
     - name: Push Docker image

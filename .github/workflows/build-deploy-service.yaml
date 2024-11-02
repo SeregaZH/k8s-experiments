@@ -39,7 +39,17 @@ jobs:
         cd services/${{ matrix.service }}
         dotnet build --configuration Release --no-restore
 
-    - name: Run tests
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: sztestacr.azurecr.io
+        username: ${{ secrets.AZURE_CLIENT_ID }}
+        password: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+    - name: Build Docker image
       run: |
-        cd services/${{ matrix.service }}
-        dotnet test --no-build --verbosity normal
+        docker build --build-arg SERVICE_NAME=${{ matrix.service }} -t sztestacr.azurecr.io/${{ matrix.service }}:latest .
+
+    - name: Push Docker image
+      run: |
+        docker push sztestacr.azurecr.io/${{ matrix.service }}:latest

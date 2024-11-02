@@ -5,12 +5,16 @@ on:
     branches:
       - main
     paths:
-      - 'services/**'  # Only trigger for changes in the services directory
+      - 'services/**'
+      - '.github/workflows/**'
+      - 'shared/**'
   pull_request:
     branches:
       - main
     paths:
       - 'services/**'
+      - '.github/workflows/**'
+      - 'shared/**'
 
 jobs:
   build:

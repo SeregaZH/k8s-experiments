@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         service:
-          - DotnetResourcesTest
+          - dotnet-resources-test
 
     steps:
     - name: Checkout code

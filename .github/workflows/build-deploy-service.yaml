@@ -8,6 +8,7 @@ on:
       - 'services/**'
       - '.github/workflows/**'
       - 'shared/**'
+      - 'Dockerfile'
   pull_request:
     branches:
       - main
@@ -15,6 +16,7 @@ on:
       - 'services/**'
       - '.github/workflows/**'
       - 'shared/**'
+      - 'Dockerfile'
 
 jobs:
   build:

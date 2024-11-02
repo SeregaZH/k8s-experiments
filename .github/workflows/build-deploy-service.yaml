@@ -57,7 +57,7 @@ jobs:
         projName=$(echo ${{ matrix.service }} | sed -E 's/(^|-)([a-z])/\U\2/g; s/^-//')
         echo ${{ matrix.service }}
         echo $projName
-        docker build --build-arg SERVICE_NAME=${{ matrix.service }} PROJ_NAME=projName -t sztestacr.azurecr.io/${{ matrix.service }}:latest .
+        docker build --build-arg SERVICE_NAME=${{ matrix.service }} --build-arg PROJ_NAME=projName -t sztestacr.azurecr.io/${{ matrix.service }}:latest .
 
     - name: Push Docker image
       run: |

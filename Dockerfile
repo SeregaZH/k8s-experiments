@@ -31,4 +31,4 @@ ENV PROJECT_NAME=${PROJ_NAME}
 # Print the project name for debugging
 RUN echo "Running project: ${PROJ_NAME}"
 
-ENTRYPOINT ["dotnet", "${PROJECT_NAME}.dll"]
+ENTRYPOINT ["/bin/bash", "-c", "exec dotnet ${PROJECT_NAME}.dll"]

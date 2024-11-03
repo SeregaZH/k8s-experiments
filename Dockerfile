@@ -2,8 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-ARG SERVICE_NAME=''
-ARG PROJ_NAME=''
+ONBUILD ARG SERVICE_NAME=''
+ONBUILD ARG PROJ_NAME=''
 
 # Copy the shared library files if any
 COPY ./shared/ ./shared/
@@ -21,4 +21,5 @@ RUN dotnet publish ./services/${SERVICE_NAME}/src/${PROJ_NAME}/${PROJ_NAME}.cspr
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+RUN echo "PROJ_NAME=${PROJ_NAME}"
 ENTRYPOINT ["dotnet", "${PROJ_NAME}.dll"]

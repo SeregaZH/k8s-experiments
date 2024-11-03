@@ -21,15 +21,14 @@ RUN dotnet publish ./services/${SERVICE_NAME}/src/${PROJ_NAME}/${PROJ_NAME}.cspr
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-ARG SERVICE_NAME=''
 ARG PROJ_NAME=''
 
 COPY --from=build /app/publish .
 
 # Set the environment variable for the project name
-ENV PROJ_NAME=${PROJ_NAME}
+ENV PROJECT_NAME=${PROJ_NAME}
 
 # Print the project name for debugging
 RUN echo "Running project: ${PROJ_NAME}"
 
-ENTRYPOINT ["dotnet", "${PROJ_NAME}.dll"]
+ENTRYPOINT ["dotnet", "${PROJECT_NAME}.dll"]

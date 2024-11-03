@@ -6,7 +6,11 @@ namespace DotnerResourcesTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            while (true)
+            {
+                Console.WriteLine("Hello World!");
+                System.Threading.Thread.Sleep(1000);
+            }
         }
     }
 }

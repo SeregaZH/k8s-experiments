@@ -20,6 +20,10 @@ RUN dotnet publish ./services/${SERVICE_NAME}/src/${PROJ_NAME}/${PROJ_NAME}.cspr
 # Use the official ASP.NET runtime image for running the application
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+
+ARG SERVICE_NAME=''
+ARG PROJ_NAME=''
+
 COPY --from=build /app/publish .
 
 # Set the environment variable for the project name

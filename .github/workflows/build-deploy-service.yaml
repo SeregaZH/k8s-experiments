@@ -89,4 +89,5 @@ jobs:
     - name: Push Docker image
       run: |
         docker push sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }}
+        docker tag sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }} sztestacr.azurecr.io/${{ matrix.service }}:latest
         docker push sztestacr.azurecr.io/${{ matrix.service }}:latest

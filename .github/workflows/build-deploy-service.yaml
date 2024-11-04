@@ -28,7 +28,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+      with:
+        # Optionally specify the ref, but it's not necessary as this step will pick up the tag from the push event.
+        fetch-depth: 0  # Ensures all tags are fetched
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3

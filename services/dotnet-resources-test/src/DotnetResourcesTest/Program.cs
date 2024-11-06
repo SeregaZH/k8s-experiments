@@ -27,8 +27,8 @@ async Task GenerateMemorySpike(int sizeMb, int durationMs)
     List<byte[]> memorySpike = new List<byte[]>();
     for (int i = 0; i < sizeMb; i++)
     {
-        memorySpike.Add(new byte[1024 * 1024]); // Allocate 1 MB
-        sharedList.Add(new byte[1024]);
+        memorySpike.Add(new byte[1024 * 1024 * 10]); // Allocate 1 MB
+        sharedList.Add(new byte[1024 * 1024]);
     }
     await Task.Delay(durationMs);
     memorySpike.Clear(); // Release memory

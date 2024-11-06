@@ -1,16 +1,45 @@
-﻿using System;
+using System.Diagnostics;
 
-namespace DotnerResourcesTest
+Console.WriteLine("Starting memory and CPU spike test...");
+
+// Adjust these variables for different load patterns
+int memorySpikeDuration = 5000; // Memory spike duration in milliseconds
+int cpuSpikeDuration = 2000; // CPU spike duration in milliseconds
+int memorySizeMb = 100; // Size of memory spike in MB
+int cpuSpikeInterval = 10000; // Interval between CPU spikes in milliseconds
+
+var sharedList = new List<byte[]>();
+
+while (true) 
 {
-    class Program
+    Console.WriteLine("Generating memory spike...");
+    await GenerateMemorySpike(memorySizeMb, memorySpikeDuration);
+
+    Console.WriteLine("Generating CPU spike...");
+    GenerateCpuSpike(cpuSpikeDuration);
+
+    // Sleep between spikes
+    await Task.Delay(cpuSpikeInterval);
+}
+
+async Task GenerateMemorySpike(int sizeMb, int durationMs)
+{
+    List<byte[]> memorySpike = new List<byte[]>();
+    for (int i = 0; i < sizeMb; i++)
     {
-        static void Main(string[] args)
-        {
-            while (true)
-            {
-                Console.WriteLine("Hello World!");
-                System.Threading.Thread.Sleep(1000);
-            }
-        }
+        memorySpike.Add(new byte[1024 * 1024]); // Allocate 1 MB
+        sharedList.Add(new byte[1024]);
+    }
+    await Task.Delay(durationMs);
+    memorySpike.Clear(); // Release memory
+}
+
+static void GenerateCpuSpike(int durationMs)
+{
+    Stopwatch stopwatch = Stopwatch.StartNew();
+    while (stopwatch.ElapsedMilliseconds < durationMs)
+    {
+        // Run CPU-intensive task
+        Math.Sqrt(new Random().NextDouble());
     }
 }

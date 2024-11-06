@@ -5,7 +5,7 @@ Console.WriteLine("Starting memory and CPU spike test...");
 // Adjust these variables for different load patterns
 int memorySpikeDuration = 5000; // Memory spike duration in milliseconds
 int cpuSpikeDuration = 2000; // CPU spike duration in milliseconds
-int memorySizeMb = 100; // Size of memory spike in MB
+int memorySizeMb = 300; // Size of memory spike in MB
 int cpuSpikeInterval = 10000; // Interval between CPU spikes in milliseconds
 
 var sharedList = new List<byte[]>();
@@ -27,7 +27,7 @@ async Task GenerateMemorySpike(int sizeMb, int durationMs)
     List<byte[]> memorySpike = new List<byte[]>();
     for (int i = 0; i < sizeMb; i++)
     {
-        memorySpike.Add(new byte[1024 * 1024 * 10]); // Allocate 10 MB
+        memorySpike.Add(new byte[1024 * 1024]); // Allocate 10 MB
         sharedList.Add(new byte[1024 * 100]); // Allocate 100 KB
     }
     await Task.Delay(durationMs);

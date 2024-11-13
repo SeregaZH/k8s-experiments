@@ -44,6 +44,7 @@ jobs:
 
         # Set the next tag as an output variable
         echo "::set-output name=next_tag::$NEXT_TAG"
+        echo "next_tag=$NEXT_TAG" >> $GITHUB_ENV
         echo "Next tag version: $NEXT_TAG"
 
     # Create and push the Git tag

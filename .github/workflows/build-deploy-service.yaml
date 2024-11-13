@@ -102,9 +102,11 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
 
     - name: Push Docker image
       run: |
         docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ env.next_tag }}
         docker tag ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ env.next_tag }} ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
         docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
+      continue-on-error: true

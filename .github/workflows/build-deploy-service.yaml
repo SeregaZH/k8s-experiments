@@ -21,6 +21,8 @@ on:
 jobs:
   create-tag:
     runs-on: ubuntu-latest
+    outputs:
+      next_tag: ${{ steps.set_tag.outputs.next_tag }}
     steps:
 
     - name: Checkout code
@@ -30,7 +32,7 @@ jobs:
         fetch-depth: 0  # Ensures all tags are fetched
 
     - name: Determine next SemVer tag
-      id: tag
+      id: set_tag
       run: |
         # Get the latest tag from the repository
         LATEST_TAG=$(git describe --tags --abbrev=0 || echo "0.0.0")
@@ -84,23 +86,12 @@ jobs:
         cd services/${{ matrix.service }}
         dotnet build --configuration Release --no-restore
 
-    - name: Determine next SemVer tag
-      id: tag
-      run: |
-        # Get the latest tag from the repository
-        LATEST_TAG=$(git describe --tags --abbrev=0 || echo "0.0.0")
-        NEXT_TAG="$LATEST_TAG"
-
-        # Set the next tag as an output variable
-        echo "next_tag=$NEXT_TAG" >> $GITHUB_ENV
-        echo "Next tag version: $NEXT_TAG"
-
     - name: Build Docker image
       run: |
         projName=$(echo ${{ matrix.service }} | sed -E 's/(^|-)([a-z])/\U\2/g; s/^-//')
         echo ${{ matrix.service }}
         echo $projName
-        docker build --build-arg SERVICE_NAME=${{ matrix.service }} --build-arg PROJ_NAME=$projName -t sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }} .
+        docker build --build-arg SERVICE_NAME=${{ matrix.service }} --build-arg PROJ_NAME=$projName -t sztestacr.azurecr.io/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }} .
 
   azure-publish:
     runs-on: ubuntu-latest
@@ -121,8 +112,8 @@ jobs:
 
     - name: Push Docker image
       run: |
-        docker push sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }}
-        docker tag sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }} sztestacr.azurecr.io/${{ matrix.service }}:latest
+        docker push sztestacr.azurecr.io/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }}
+        docker tag sztestacr.azurecr.io/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }} sztestacr.azurecr.io/${{ matrix.service }}:latest
         docker push sztestacr.azurecr.io/${{ matrix.service }}:latest
 
   github-publish:
@@ -144,6 +135,6 @@ jobs:
     - name: Push Docker image
       run: |
         lower_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-        docker push ghcr.io/$lower_owner/${{ matrix.service }}:${{ env.next_tag }}
-        docker tag ghcr.io/$lower_owner/${{ matrix.service }}:${{ env.next_tag }} ghcr.io/$lower_owner/${{ matrix.service }}:latest
+        docker push ghcr.io/$lower_owner/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }}
+        docker tag ghcr.io/$lower_owner/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }} ghcr.io/$lower_owner/${{ matrix.service }}:latest
         docker push ghcr.io/$lower_owner/${{ matrix.service }}:latest

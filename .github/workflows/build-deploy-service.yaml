@@ -25,6 +25,7 @@ jobs:
       matrix:
         service:
           - dotnet-resources-test
+          - dotnet-hello-world-api
 
     steps:
     - name: Checkout code
@@ -72,13 +73,6 @@ jobs:
         git tag $TAG
         git push origin $TAG
 
-    - name: Login to Azure Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: sztestacr.azurecr.io
-        username: ${{ secrets.AZURE_CLIENT_ID }}
-        password: ${{ secrets.AZURE_CLIENT_SECRET }}
-
     - name: Build Docker image
       run: |
         projName=$(echo ${{ matrix.service }} | sed -E 's/(^|-)([a-z])/\U\2/g; s/^-//')
@@ -86,8 +80,31 @@ jobs:
         echo $projName
         docker build --build-arg SERVICE_NAME=${{ matrix.service }} --build-arg PROJ_NAME=$projName -t sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }} .
 
+
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: sztestacr.azurecr.io
+        username: ${{ secrets.AZURE_CLIENT_ID }}
+        password: ${{ secrets.AZURE_CLIENT_SECRET }}
+      if: success()
+
     - name: Push Docker image
       run: |
         docker push sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }}
         docker tag sztestacr.azurecr.io/${{ matrix.service }}:${{ env.next_tag }} sztestacr.azurecr.io/${{ matrix.service }}:latest
         docker push sztestacr.azurecr.io/${{ matrix.service }}:latest
+      if: success()
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push Docker image
+      run: |
+        docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ env.next_tag }}
+        docker tag ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ env.next_tag }} ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
+        docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest

@@ -10,13 +10,21 @@ int cpuSpikeInterval = 1000; // Interval between CPU spikes in milliseconds
 
 var sharedList = new List<byte[]>();
 
-while (true) 
-{
-    Console.WriteLine("Generating memory spike...");
-    await GenerateMemorySpike(memorySizeMb, memorySpikeDuration);
+var runSpikes = Environment.GetEnvironmentVariable("RUN_SPIKES") == "true";
 
-    Console.WriteLine("Generating CPU spike...");
-    GenerateCpuSpike(cpuSpikeDuration);
+while (true)
+{
+    if(runSpikes)
+    {
+        Console.WriteLine("Generating memory spike...");
+        await GenerateMemorySpike(memorySizeMb, memorySpikeDuration);
+    }
+
+    if(runSpikes)
+    {
+        Console.WriteLine("Generating CPU spike...");
+         GenerateCpuSpike(cpuSpikeDuration);
+    }
 
     // Sleep between spikes
     await Task.Delay(cpuSpikeInterval);

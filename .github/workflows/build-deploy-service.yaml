@@ -86,14 +86,7 @@ jobs:
         cd services/${{ matrix.service }}
         dotnet build --configuration Release --no-restore
 
-    - name: Build Docker image
-      run: |
-        projName=$(echo ${{ matrix.service }} | sed -E 's/(^|-)([a-z])/\U\2/g; s/^-//')
-        echo ${{ matrix.service }}
-        echo $projName
-        docker build --build-arg SERVICE_NAME=${{ matrix.service }} --build-arg PROJ_NAME=$projName -t sztestacr.azurecr.io/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }} .
-
-  azure-publish:
+  azure-build-publish:
     runs-on: ubuntu-latest
     needs:
       - build
@@ -105,6 +98,13 @@ jobs:
           - dotnet-hello-world-api
 
     steps:
+    - name: Build Docker image
+      run: |
+        projName=$(echo ${{ matrix.service }} | sed -E 's/(^|-)([a-z])/\U\2/g; s/^-//')
+        echo ${{ matrix.service }}
+        echo $projName
+        docker build --build-arg SERVICE_NAME=${{ matrix.service }} --build-arg PROJ_NAME=$projName -t sztestacr.azurecr.io/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }} .
+
     - name: Login to Azure Container Registry
       uses: azure/docker-login@v1
       with:
@@ -118,7 +118,7 @@ jobs:
         docker tag sztestacr.azurecr.io/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }} sztestacr.azurecr.io/${{ matrix.service }}:latest
         docker push sztestacr.azurecr.io/${{ matrix.service }}:latest
 
-  github-publish:
+  github-build-publish:
     runs-on: ubuntu-latest
     needs:
       - build
@@ -129,6 +129,14 @@ jobs:
           - dotnet-resources-test
           - dotnet-hello-world-api
     steps:
+    - name: Build Docker image
+      run: |
+        lower_owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+        projName=$(echo ${{ matrix.service }} | sed -E 's/(^|-)([a-z])/\U\2/g; s/^-//')
+        echo ${{ matrix.service }}
+        echo $projName
+        docker build --build-arg SERVICE_NAME=${{ matrix.service }} --build-arg PROJ_NAME=$projName -t ghcr.io/$lower_owner/${{ matrix.service }}:${{ needs.create-tag.outputs.next_tag }} .
+
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v2
       with:

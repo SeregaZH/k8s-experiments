@@ -95,7 +95,9 @@ jobs:
 
   azure-publish:
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - create-tag
     strategy:
       matrix:
         service:
@@ -118,7 +120,9 @@ jobs:
 
   github-publish:
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - create-tag
     strategy:
       matrix:
         service:
